@@ -1,29 +1,45 @@
-package mysql
+package src
 
 import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"sync"
 )
 
-func NewMySQLClient(configJson string) (*Client, error) {
-	config := Config{
+type MySQLConfig struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Database string `json:"database"`
+}
+
+type MySQLClient struct {
+	db     *sql.DB
+	config MySQLConfig
+	mutex  sync.Mutex
+}
+
+func (c *MySQLClient) Init(configData string) (*MySQLClient, error) {
+	config := MySQLConfig{
 		Host:     "localhost",
 		Port:     3306,
 		User:     "root",
 		Password: "123456",
 	}
-	err := json.Unmarshal([]byte(configJson), &config)
+	err := json.Unmarshal([]byte(configData), &config)
 	if err != nil {
 		return nil, err
 	}
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.User, config.Password, config.Host, config.Port, config.DBName))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.User, config.Password, config.Host, config.Port, config.Database))
 	if err != nil {
 		return nil, err
 	}
 
-	client := &Client{
+	client := &MySQLClient{
 		db:     db,
 		config: config,
 	}
@@ -31,7 +47,12 @@ func NewMySQLClient(configJson string) (*Client, error) {
 	return client, nil
 }
 
-func (c *Client) Query(query string) ([]map[string]interface{}, error) {
+func (c *MySQLClient) Destroy(ql string) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c *MySQLClient) Query(query string) ([]map[string]interface{}, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
