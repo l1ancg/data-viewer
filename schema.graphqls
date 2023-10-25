@@ -1,0 +1,32 @@
+type Resource {
+    id:Int
+    name: String
+    type: String
+    data: String
+}
+
+type Mutation {
+    saveResource(id: Int, name:String, type:String, data:String ): Resource!
+}
+
+# TODO ⬇️
+type Column {
+    name: String
+    label:String
+    dataType:String
+    orderBy:String
+    display:Boolean
+    condition:Boolean
+    convert:[Convert]
+}
+
+type Convert {
+    key:String
+    value:String
+}
+
+enum ResourceType {
+    MySQL
+    MongoDB
+}
+
