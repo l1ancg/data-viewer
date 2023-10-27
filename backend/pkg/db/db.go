@@ -1,14 +1,24 @@
 package db
 
 import (
-	"fmt"
 	"github.com/l1ancg/data-viewer/backend/pkg/config"
+	"github.com/l1ancg/data-viewer/backend/pkg/log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 type DB struct {
 	db *gorm.DB
+}
+
+func ProvideDB(config *config.Config, logger *log.Logger) *DB {
+	logger.Info("init sqlite3: %s", config.Sqlite3.File)
+	d, err := gorm.Open(sqlite.Open(config.Sqlite3.File), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	return &DB{db: d}
 }
 
 func (db *DB) CreateTable(dst ...interface{}) *DB {
@@ -53,13 +63,4 @@ func (db *DB) Delete(value interface{}, conds ...interface{}) *DB {
 func (db *DB) Model(value interface{}) *DB {
 	db.db.Model(value)
 	return db
-}
-func New() *DB {
-	fmt.Println("init sqlite3: ", config.Env.Sqlite3.File)
-	d, err := gorm.Open(sqlite.Open(config.Env.Sqlite3.File), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-
-	return &DB{db: d}
 }

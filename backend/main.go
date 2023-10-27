@@ -10,6 +10,6 @@ type GlobalEnv struct {
 }
 
 func main() {
-	config.LoadConfig()
+	config.ProvideConfig()
 	api.ProvideServer()
 }

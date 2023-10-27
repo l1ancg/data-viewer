@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
+	"github.com/l1ancg/data-viewer/backend/pkg/log"
 	"gopkg.in/ini.v1"
 	"os"
 )
 
-type GlobalEnv struct {
+type Config struct {
 	Server  int     `ini:"server"`
 	Sqlite3 sqlite3 `ini:"sqlite3"`
 }
@@ -20,19 +21,18 @@ type sqlite3 struct {
 	Name string `ini:"name"`
 }
 
-var Env *GlobalEnv
-
-func LoadConfig() {
+func ProvideConfig(logger *log.Logger) *Config {
 	cfg, err := ini.Load("data-viewer.ini")
 	if err != nil {
 		fmt.Printf("Fail to read config file: %v", err)
 		os.Exit(1)
 	}
-	Env = &GlobalEnv{}
-	err = cfg.MapTo(Env)
+	config := &Config{}
+	err = cfg.MapTo(config)
 	if err != nil {
 		fmt.Printf("Fail to read config file: %v", err)
 		os.Exit(1)
 	}
-	fmt.Println("env config load done: ", Env)
+	logger.Info("config load done: %s", config)
+	return config
 }
