@@ -8,12 +8,12 @@ import (
 )
 
 type Config struct {
-	Server  int     `ini:"server"`
+	Server  server  `ini:"server"`
 	Sqlite3 sqlite3 `ini:"sqlite3"`
 }
 
 type server struct {
-	Port int `ini:"port"`
+	Port string `ini:"port"`
 }
 
 type sqlite3 struct {
@@ -21,7 +21,7 @@ type sqlite3 struct {
 	Name string `ini:"name"`
 }
 
-func ProvideConfig(logger *log.Logger) *Config {
+func NewConfig() *Config {
 	cfg, err := ini.Load("data-viewer.ini")
 	if err != nil {
 		fmt.Printf("Fail to read config file: %v", err)
@@ -33,6 +33,6 @@ func ProvideConfig(logger *log.Logger) *Config {
 		fmt.Printf("Fail to read config file: %v", err)
 		os.Exit(1)
 	}
-	logger.Info("config load done: %s", config)
+	log.Info("config load done: %s", config)
 	return config
 }

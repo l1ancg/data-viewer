@@ -1,25 +1,18 @@
 package log
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/golang/glog"
 )
 
-type Logger struct {
-	logger *zap.SugaredLogger
+func Info(template string, args ...interface{}) {
+	glog.Info(template, args)
 }
-
-type Field struct {
-	zapcore.Field
+func Warning(template string, args ...interface{}) {
+	glog.Warning(template, args)
 }
-
-func ProvideLog() *Logger {
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	sl := logger.Sugar()
-	return &Logger{logger: sl}
+func Error(template string, args ...interface{}) {
+	glog.Error(template, args)
 }
-
-func (log *Logger) Info(template string, args ...interface{}) {
-	log.logger.Infof(template, args...)
+func Fatal(template string, args ...interface{}) {
+	glog.Fatal(template, args)
 }
