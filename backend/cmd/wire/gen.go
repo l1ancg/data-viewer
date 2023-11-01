@@ -5,18 +5,18 @@ package wire
 
 import (
 	"github.com/google/wire"
+	"github.com/l1ancg/data-viewer/backend/config"
+	"github.com/l1ancg/data-viewer/backend/internal/repository"
 	"github.com/l1ancg/data-viewer/backend/internal/server"
-	"github.com/l1ancg/data-viewer/backend/internal/service"
-	"github.com/l1ancg/data-viewer/backend/pkg/config"
-	"github.com/l1ancg/data-viewer/backend/pkg/db"
 )
 
 func NewServer() *server.Server {
 	panic(wire.Build(
 		config.NewConfig,
-		db.DBprovider,
-		service.ServiceProvider,
-		server.ServerProvider,
+		repository.DBProvider,
+		//application.ServiceProvider,
+		server.GraphQLHandlerProvider,
+		server.HttpServerProvider,
 	))
 	return &server.Server{}
 }

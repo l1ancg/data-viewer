@@ -3,13 +3,15 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"github.com/graphql-go/graphql"
 	"reflect"
+
+	"github.com/graphql-go/graphql"
+	"github.com/mitchellh/mapstructure"
 )
 
-func CreateObject(obj interface{}) *graphql.Object {
+func CreateObject(name string, obj interface{}) *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
-		Name:   "resource",
+		Name:   name,
 		Fields: graphql.BindFields(obj),
 	})
 }
@@ -27,38 +29,38 @@ func CreateSaveResolve(s interface{}, saveFunc func(p interface{})) func(params 
 		panic(fmt.Sprintf("expected struct, got %s", t.Kind()))
 	}
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		r := reflect.New(t)
-		for i := 0; i < t.NumField(); i++ {
-			field := t.Field(i)
-			fieldName := field.Name
-			objValue := reflect.ValueOf(r).Elem()
-			fieldValue := objValue.FieldByName(fieldName)
-			if fieldValue.IsValid() {
-				val := reflect.ValueOf(p.Args[field.Name]).Convert(field.Type)
-				fieldValue.Set(val)
-			}
-		}
+		r := reflect.New(t).Interface()
+		mapstructure.Decode(p.Args, r)
 		saveFunc(r)
 		return r, nil
 	}
 }
 
 func CreateGetResolve(s interface{}, getFunc func(dest interface{}, id int)) func(params graphql.ResolveParams) (interface{}, error) {
+	tp := reflect.TypeOf(s)
+	if tp.Kind() == reflect.Ptr {
+		tp = tp.Elem()
+	}
 	return func(params graphql.ResolveParams) (interface{}, error) {
 		id, isOK := params.Args["id"].(int)
 		if isOK {
-			dest := reflect.New(reflect.TypeOf(s))
+			dest := reflect.New(tp).Interface()
 			getFunc(dest, id)
+			return dest, nil
 		}
 		return nil, errors.New("请指定ID参数")
 	}
 }
 
 func CreateListResolve(s interface{}, listFunc func(interface{})) func(p graphql.ResolveParams) (interface{}, error) {
+	tp := reflect.TypeOf(s)
+	if tp.Kind() == reflect.Ptr {
+		tp = tp.Elem()
+	}
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		tp := reflect.TypeOf(s)
-		sli := reflect.MakeSlice(reflect.SliceOf(tp), 0, 0)
-		listFunc(sli)
-		return sli, nil
+		sliceType := reflect.SliceOf(tp)
+		slice := reflect.New(sliceType).Elem()
+		listFunc(slice.Addr().Interface())
+		return slice.Interface(), nil
 	}
 }

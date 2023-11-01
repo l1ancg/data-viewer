@@ -2,38 +2,64 @@ package server
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/l1ancg/data-viewer/backend/internal/service"
-	"github.com/l1ancg/data-viewer/backend/pkg/config"
-	"net/http"
+	"github.com/l1ancg/data-viewer/backend/config"
+	"github.com/l1ancg/data-viewer/backend/internal/application"
+	"github.com/l1ancg/data-viewer/backend/pkg"
+	"github.com/l1ancg/data-viewer/backend/pkg/log"
 )
 
 type Server struct {
-	Config  *config.Config
-	Service *service.Service
+	Config *config.Config
 }
 
-func ServerProvider(config *config.Config, service *service.Service) *Server {
-	return &Server{Config: config, Service: service}
+type GraphQLHandler struct {
+	pkg.AbstractHandler
+}
+
+func GraphQLHandlerProvider(service *application.Service) *GraphQLHandler {
+	queryFields := graphql.Fields{}
+	mutationFields := graphql.Fields{}
+	for _, manager := range *service.Services {
+		for key, val := range manager.QueryAction {
+			queryFields[key] = val
+		}
+		for key, val := range manager.MutationAction {
+			mutationFields[key] = val
+		}
+	}
+	sc := graphql.SchemaConfig{
+		Query: graphql.NewObject(graphql.ObjectConfig{
+			Name:   "RootQuery",
+			Fields: queryFields,
+		}),
+		Mutation: graphql.NewObject(graphql.ObjectConfig{
+			Name:   "RootMutation",
+			Fields: mutationFields,
+		}),
+	}
+	schema, _ := graphql.NewSchema(sc)
+	handler := GraphQLHandler{AbstractHandler: pkg.AbstractHandler{
+		Path: "/graphql",
+		Handler: handler.New(&handler.Config{
+			Schema:     &schema,
+			Pretty:     true,
+			Playground: true,
+		}),
+	}}
+	log.Logger.Infoln("graphql query handler init success:", service.Names())
+	return &handler
+}
+
+func HttpServerProvider(config *config.Config, handler *GraphQLHandler) *Server {
+	http.Handle(handler.Path, handler.Handler)
+	return &Server{Config: config}
 }
 
 func (server *Server) Run() {
-	sc := graphql.SchemaConfig{
-		Query: graphql.NewObject(graphql.ObjectConfig{
-			Name:   "QUERY",
-			Fields: server.Service.QueryActions(),
-		}),
-		Mutation: graphql.NewObject(graphql.ObjectConfig{
-			Name:   "MUTATION",
-			Fields: server.Service.MutationActions(),
-		}),
-	}
-	s, _ := graphql.NewSchema(sc)
-	http.Handle("/graphql", handler.New(&handler.Config{
-		Schema:   &s,
-		Pretty:   true,
-		GraphiQL: true,
-	}))
-	http.ListenAndServe(fmt.Sprintf(":%s", server.Config.Server.Port), nil)
+	log.Logger.Infoln("server run on port:", server.Config.Server.Port)
+	http.ListenAndServe(fmt.Sprintf("127.0.0.1:%s", server.Config.Server.Port), nil)
 }

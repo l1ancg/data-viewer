@@ -1,25 +1,30 @@
-package service
+package application
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/l1ancg/data-viewer/backend/internal/repository"
 	"github.com/l1ancg/data-viewer/backend/pkg"
-	"github.com/l1ancg/data-viewer/backend/pkg/db"
 	"github.com/l1ancg/data-viewer/backend/pkg/utils"
-	"gorm.io/gorm"
 )
 
 type Dict struct {
-	gorm.Model
-	ID   int    `json:"id"`
+	ID   int    `json:"id"  gorm:"primarykey"`
 	Name string `json:"name"`
 }
 
 type DictDetail struct {
-	gorm.Model
-	ID      int    `json:"id"`
-	GroupId int    `json:"groupId"`
-	Key     string `json:"key"`
-	Value   string `json:"value"`
+	ID     int    `json:"id"  gorm:"primarykey"`
+	DictId int    `json:"dictId"`
+	Key    string `json:"key"`
+	Value  string `json:"value"`
+}
+
+func (Dict) TableName() string {
+	return "dict"
+}
+
+func (DictDetail) TableName() string {
+	return "dict_detail"
 }
 
 type DictService struct {
@@ -30,32 +35,29 @@ type DictDetailService struct {
 	pkg.AbstractManager
 }
 
-func NewDictService(db *db.DB) *DictService {
-	//createTable(db)
+func NewDictService(db *repository.DB) *DictService {
 	t := Dict{}
-	to := utils.CreateObject(t)
+	to := utils.CreateObject("dict", &t)
 
-	// todo query sub table
-	// todo saev sub table
 	dm := DictService{AbstractManager: pkg.AbstractManager{
 		Name: "dict",
 		DB:   db,
-		QueryAction: map[string]*graphql.Field{
+		QueryAction: graphql.Fields{
 			"dict": {
 				Type:    to,
-				Args:    utils.CreateArguments(t, "id"), // todo select by resource id
+				Args:    utils.CreateArguments(t, "id"),
 				Resolve: utils.CreateGetResolve(t, db.First),
 			},
 			"dicts": {
 				Type:    graphql.NewList(to),
-				Resolve: utils.CreateListResolve(t, db.Find), // todo order by
+				Resolve: utils.CreateListResolve(t, db.Select),
 			},
 		},
-		MutationAction: map[string]*graphql.Field{
+		MutationAction: graphql.Fields{
 			"dict": {
 				Type:    to,
 				Args:    utils.CreateArguments(t, "id"),
-				Resolve: utils.CreateSaveResolve(t, db.Save), // todo save dictDetail
+				Resolve: utils.CreateSaveResolve(t, db.Save),
 			},
 		},
 		Type: t,
@@ -63,23 +65,20 @@ func NewDictService(db *db.DB) *DictService {
 	return &dm
 }
 
-func NewDictDetailService(db *db.DB) *DictDetailService {
-	//createTable(db)
+func NewDictDetailService(db *repository.DB) *DictDetailService {
 	t := Dict{}
-	to := utils.CreateObject(t)
+	to := utils.CreateObject("dictDetail", &t)
 
-	// todo query sub table
-	// todo saev sub table
 	dm := DictDetailService{AbstractManager: pkg.AbstractManager{
 		Name: "dictDetail",
 		DB:   db,
-		QueryAction: map[string]*graphql.Field{
+		QueryAction: graphql.Fields{
 			"dictDetails": {
 				Type:    graphql.NewList(to),
-				Resolve: utils.CreateListResolve(t, db.Find), // todo order by & query by groupId
+				Resolve: utils.CreateListResolve(t, db.Select),
 			},
 		},
-		MutationAction: map[string]*graphql.Field{
+		MutationAction: graphql.Fields{
 			"dictDetail": {
 				Type:    to,
 				Args:    utils.CreateArguments(t, "id"),

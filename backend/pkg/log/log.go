@@ -1,18 +1,56 @@
 package log
 
 import (
-	"github.com/golang/glog"
+	"fmt"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/natefinch/lumberjack"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
-func Info(template string, args ...interface{}) {
-	glog.Info(template, args)
+var Logger *zap.SugaredLogger
+
+func init() {
+	logMode := zapcore.InfoLevel
+	core := zapcore.NewCore(
+		getEncoder(),
+		zapcore.NewMultiWriteSyncer(getWriterSyncer(), zapcore.AddSync(os.Stdout)),
+		logMode,
+	)
+	Logger = zap.New(core).Sugar()
 }
-func Warning(template string, args ...interface{}) {
-	glog.Warning(template, args)
+
+func getEncoder() zapcore.Encoder {
+	encoderConfig := zap.NewDevelopmentEncoderConfig()
+	{
+		encoderConfig.LevelKey = "level"
+		encoderConfig.MessageKey = "msg"
+		encoderConfig.TimeKey = "time"
+		encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+		encoderConfig.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
+			encoder.AppendString(t.Local().Format("2006-01-02 15:04:05"))
+		}
+	}
+
+	return zapcore.NewJSONEncoder(encoderConfig)
 }
-func Error(template string, args ...interface{}) {
-	glog.Error(template, args)
-}
-func Fatal(template string, args ...interface{}) {
-	glog.Fatal(template, args)
+
+func getWriterSyncer() zapcore.WriteSyncer {
+	stSeparator := string(filepath.Separator)
+	stRootDir, _ := os.Getwd()
+	stLogFilePath := stRootDir + stSeparator + "log" + stSeparator + time.Now().Format("2006-01-02") + ".log"
+	fmt.Println(stLogFilePath)
+
+	hook := lumberjack.Logger{
+		Filename:   stLogFilePath,
+		MaxSize:    100,
+		MaxBackups: 3,
+		MaxAge:     15,
+		Compress:   true,
+	}
+
+	return zapcore.AddSync(&hook)
 }

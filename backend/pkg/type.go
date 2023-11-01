@@ -2,17 +2,34 @@ package pkg
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/handler"
+	"github.com/l1ancg/data-viewer/backend/internal/repository"
 	"github.com/l1ancg/data-viewer/backend/pkg/component"
-	"github.com/l1ancg/data-viewer/backend/pkg/db"
 )
+
+//type Action map[string]*graphql.Field
 
 type AbstractManager struct {
 	Name           string
-	DB             *db.DB
-	QueryAction    map[string]*graphql.Field
-	MutationAction map[string]*graphql.Field
+	DB             *repository.DB
+	QueryAction    graphql.Fields
+	MutationAction graphql.Fields
 	Type           interface{}
 }
+
+type AbstractHandler struct {
+	Path    string
+	Handler *handler.Handler
+	// auth...
+}
+
+//func (a *Action) Names() []string {
+//	var r []string
+//	for k := range *a {
+//		r = append(r, k)
+//	}
+//	return r
+//}
 
 type Connect interface {
 	Init(data string) (*component.MySQLClient, error)

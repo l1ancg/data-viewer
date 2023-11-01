@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/l1ancg/data-viewer/backend/pkg/log"
 	"gopkg.in/ini.v1"
-	"os"
 )
 
 type Config struct {
@@ -14,11 +15,11 @@ type Config struct {
 
 type server struct {
 	Port string `ini:"port"`
+	Mode string `ini:"mode"`
 }
 
 type sqlite3 struct {
 	File string `ini:"file"`
-	Name string `ini:"name"`
 }
 
 func NewConfig() *Config {
@@ -33,6 +34,6 @@ func NewConfig() *Config {
 		fmt.Printf("Fail to read config file: %v", err)
 		os.Exit(1)
 	}
-	log.Info("config load done: %s", config)
+	log.Logger.Infoln("config load done")
 	return config
 }
