@@ -8,6 +8,7 @@ require (
 	github.com/graphql-go/graphql v0.8.1
 	github.com/graphql-go/handler v0.2.3
 	github.com/mattn/go-sqlite3 v1.14.17
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	go.mongodb.org/mongo-driver v1.12.1
 	go.uber.org/zap v1.26.0
@@ -23,7 +24,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
