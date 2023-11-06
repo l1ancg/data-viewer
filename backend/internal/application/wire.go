@@ -1,8 +1,8 @@
 package application
 
 import (
-	"github.com/l1ancg/data-viewer/backend/internal/repository"
-	"github.com/l1ancg/data-viewer/backend/pkg"
+	"github.com/l1ancg/data-viewer/internal/repository"
+	"github.com/l1ancg/data-viewer/pkg"
 )
 
 type Service struct {

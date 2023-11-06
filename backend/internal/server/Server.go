@@ -6,10 +6,10 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/l1ancg/data-viewer/backend/config"
-	"github.com/l1ancg/data-viewer/backend/internal/application"
-	"github.com/l1ancg/data-viewer/backend/pkg"
-	"github.com/l1ancg/data-viewer/backend/pkg/log"
+	"github.com/l1ancg/data-viewer/config"
+	"github.com/l1ancg/data-viewer/internal/application"
+	"github.com/l1ancg/data-viewer/pkg"
+	"github.com/l1ancg/data-viewer/pkg/log"
 )
 
 type Server struct {

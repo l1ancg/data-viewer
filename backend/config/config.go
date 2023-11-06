@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/l1ancg/data-viewer/backend/pkg/log"
+	"github.com/l1ancg/data-viewer/pkg/log"
 	"gopkg.in/ini.v1"
 )
 

@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/l1ancg/data-viewer/backend/config"
-	"github.com/l1ancg/data-viewer/backend/pkg/log"
+	"github.com/l1ancg/data-viewer/config"
+	"github.com/l1ancg/data-viewer/pkg/log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

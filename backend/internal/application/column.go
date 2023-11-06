@@ -2,9 +2,9 @@ package application
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/l1ancg/data-viewer/backend/internal/repository"
-	"github.com/l1ancg/data-viewer/backend/pkg"
-	"github.com/l1ancg/data-viewer/backend/pkg/utils"
+	"github.com/l1ancg/data-viewer/internal/repository"
+	"github.com/l1ancg/data-viewer/pkg"
+	"github.com/l1ancg/data-viewer/pkg/utils"
 )
 
 type Column struct {

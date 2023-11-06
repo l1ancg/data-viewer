@@ -3,8 +3,8 @@ package pkg
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/l1ancg/data-viewer/backend/internal/repository"
-	"github.com/l1ancg/data-viewer/backend/pkg/component"
+	"github.com/l1ancg/data-viewer/internal/repository"
+	"github.com/l1ancg/data-viewer/pkg/component"
 )
 
 //type Action map[string]*graphql.Field
