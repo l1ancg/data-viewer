@@ -3,14 +3,6 @@ import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { useTheme } from 'next-themes';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
 export default function Topbar() {
   const { theme, setTheme } = useTheme();
 
@@ -21,19 +13,16 @@ export default function Topbar() {
           DataViewer
         </div>
         <div className='flex justify-between items-center'>
-          <div className='mr-4 cursor-pointer'>
-            {theme === 'dark' ? (
-              <SunIcon
-                className='h-6 w-6 transition-all'
-                onClick={() => setTheme('light')}
-              />
-            ) : (
-              <MoonIcon
-                className='h-6 w-6 transition-all'
-                onClick={() => setTheme('dark')}
-              />
-            )}
-          </div>
+          {/* <div className='mr-4 cursor-pointer'>
+            <MoonIcon
+              className='h-6 w-6 block dark:none'
+              onClick={() => setTheme('light')}
+            />
+            <SunIcon
+              className='h-6 w-6 none dark:block'
+              onClick={() => setTheme('dark')}
+            />
+          </div> */}
           <div className='mr-4 cursor-pointer'>
             <GitHubLogoIcon className='h-6 w-6 hover:' />
           </div>

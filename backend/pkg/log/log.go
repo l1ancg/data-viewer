@@ -15,11 +15,8 @@ var Logger *zap.SugaredLogger
 
 func init() {
 	logMode := zapcore.InfoLevel
-	core := zapcore.NewCore(
-		getEncoder(),
-		zapcore.NewMultiWriteSyncer(getWriterSyncer(), zapcore.AddSync(os.Stdout)),
-		logMode,
-	)
+	syncer := zapcore.NewMultiWriteSyncer(getWriterSyncer(), zapcore.AddSync(os.Stdout))
+	core := zapcore.NewCore(getEncoder(), syncer, logMode)
 	Logger = zap.New(core).Sugar()
 }
 

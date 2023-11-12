@@ -5,9 +5,9 @@ package wire
 
 import (
 	"github.com/google/wire"
-	"github.com/l1ancg/data-viewer/config"
-	"github.com/l1ancg/data-viewer/internal/repository"
-	"github.com/l1ancg/data-viewer/internal/server"
+	"github.com/l1ancg/data-viewer/backend/config"
+	"github.com/l1ancg/data-viewer/backend/internal/repository"
+	"github.com/l1ancg/data-viewer/backend/internal/server"
 )
 
 func NewServer() *server.Server {

@@ -1,40 +1,53 @@
-'use client';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ViewDialog } from '@/components/view-dialog';
-
-export interface View {
-  name: string;
-  id: Number;
-  type: Number;
-  visible?: boolean;
-}
+import { baseQuery } from '@/lib/graphql';
+import { View } from '@/types';
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
-
+const dashboard: View = {
+  id: 0,
+  resourceId: 1,
+  resourceType: 'dashboard',
+  displayType: '',
+  name: 'Dashboard',
+  desc: '',
+};
 export default function Sidebar({ className }: SidebarProps) {
-  const [views, setViews] = useState<View[]>([
-    // { name: '1', id: 1, type: 1, visible: true },
-    // { name: '2', id: 2, type: 1, visible: false },
-    // { name: '3', id: 3, type: 1, visible: false },
-  ]);
+  const [views, setViews] = useState<View[]>([dashboard]);
+
+  const [active, setActive] = useState<number>(0);
+  const fetchViews = () => {
+    return baseQuery<{ views: View[] }>(`{
+        views {
+          id
+          resourceId
+          resourceType
+          displayType
+          name
+          desc
+        }
+      }`);
+  };
+
+  useEffect(() => {
+    console.log(111);
+    fetchViews().then((data) => {
+      setViews([dashboard, ...data.views]);
+    });
+  }, []);
 
   const router = useRouter();
-
-  function onOpen(item: View) {
-    const updatedViews = views.map((view) => ({
-      ...view,
-      visible: view.id === item.id,
-    }));
-    setViews(updatedViews);
-    if (item.type === 0) {
+  const onActive = (item: View) => {
+    if (item.resourceType === 'dashboard') {
       router.push(`/`);
-    } else if (item.type === 1) {
+    } else if (item.resourceType === 'mysql') {
       router.push(`/mysql/${item.id}`);
     }
-  }
+    setActive(item.id);
+  };
 
   function onAdd() {}
 
@@ -45,16 +58,15 @@ export default function Sidebar({ className }: SidebarProps) {
           {/* <h2 className='mb-2 px-2 text-slate-400 font-semibold'>Discover</h2> */}
           <div className='space-y-1'>
             {/* secondary ghost */}
-
             {views.length > 0 ? (
               views.map((item: View) => (
                 <Button
-                  variant={item.visible ? 'secondary' : 'ghost'}
+                  variant={active === item.id ? 'default' : 'ghost'}
                   className='w-full justify-start'
-                  key={item.name}
-                  onClick={() => onOpen(item)}
+                  key={item.id.toString()}
+                  onClick={() => onActive(item)}
                 >
-                  示例🧭{item.name}
+                  {item.name}
                 </Button>
               ))
             ) : (
@@ -70,7 +82,7 @@ export default function Sidebar({ className }: SidebarProps) {
               className='w-full justify-center text-slate-400 border-slate-400 hover:text-slate-600 hover:border-slate-600 hover:bg-inherit border-2 border-dashed'
               onClick={() => onAdd()}
             >
-              Add view
+              Add
             </Button>
           </ViewDialog>
           <div className='mb-1 mt-2 text-center text-sm text-muted-foreground'>

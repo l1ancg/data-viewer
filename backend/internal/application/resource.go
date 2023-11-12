@@ -2,13 +2,13 @@ package application
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/l1ancg/data-viewer/internal/repository"
-	"github.com/l1ancg/data-viewer/pkg"
-	"github.com/l1ancg/data-viewer/pkg/utils"
+	"github.com/l1ancg/data-viewer/backend/internal/repository"
+	"github.com/l1ancg/data-viewer/backend/pkg"
+	"github.com/l1ancg/data-viewer/backend/pkg/utils"
 )
 
 type Resource struct {
-	Id   uint   `json:"id" gorm:"primarykey"`
+	Id   int    `json:"id" gorm:"primarykey"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Data string `json:"data"`

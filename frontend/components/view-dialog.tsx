@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
@@ -16,7 +17,7 @@ export function ViewDialog({ children }: { children: React.ReactNode }) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className='max-w-max'>
         <DialogHeader>
-          <DialogTitle>Add view</DialogTitle>
+          <DialogTitle>View Editor</DialogTitle>
         </DialogHeader>
         <div className='gap-3 flex flex-row'>
           <div className=''>

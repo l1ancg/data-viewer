@@ -2,16 +2,18 @@ package application
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/l1ancg/data-viewer/internal/repository"
-	"github.com/l1ancg/data-viewer/pkg"
-	"github.com/l1ancg/data-viewer/pkg/utils"
+	"github.com/l1ancg/data-viewer/backend/internal/repository"
+	"github.com/l1ancg/data-viewer/backend/pkg"
+	"github.com/l1ancg/data-viewer/backend/pkg/utils"
 )
 
 type View struct {
-	Id         int    `json:"id"  gorm:"primarykey"`
-	ResourceId int    `json:"resourceId"`
-	Name       string `json:"name"`
-	Desc       string `json:"desc"`
+	Id           int    `json:"id"  gorm:"primarykey"`
+	ResourceId   int    `json:"resourceId"`
+	ResourceType string `json:"resourceType"`
+	DisplayType  string `json:"displayType"`
+	Name         string `json:"name"`
+	Desc         string `json:"desc"`
 }
 
 func (View) TableName() string {
@@ -42,7 +44,7 @@ func NewViewService(db *repository.DB) *ViewService {
 		MutationAction: graphql.Fields{
 			"view": {
 				Type:    to,
-				Args:    utils.CreateArguments(t, "id", "resourceId", "name", "desc"),
+				Args:    utils.CreateArguments(t, "id", "resourceId", "viewType", "displayType", "name", "desc"),
 				Resolve: utils.CreateSaveResolve(t, db.Save),
 			},
 		},

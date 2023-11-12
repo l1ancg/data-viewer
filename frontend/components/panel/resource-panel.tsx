@@ -1,10 +1,8 @@
-import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,91 +20,101 @@ import {
 } from '@/components/ui/card';
 import { Resource } from '@/types';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
-
-let rs: Resource[] = [];
-for (let i = 0; i < 10; i++) {
-  rs.push({
-    id: i,
-    name: 'name-' + Math.floor(Math.random() * 1000000),
-    type: 'mysql',
-  });
-}
-
-let curr = 1;
+import { useEffect, useState } from 'react';
+import { baseQuery } from '@/lib/graphql';
 
 export default function ResourcePanel() {
-  function onSelected() {
-    console.log('onSelected');
-  }
-  function onChange(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    console.log('onChange');
-    e.stopPropagation();
-  }
+  const [editing, setEditing] = useState(false);
+  const [resources, setResources] = useState([] as Resource[]);
+  const [resource, setResource] = useState(null as Resource | null);
+  const [selected, setSelected] = useState(null as number | null);
 
-  function editorDialog({ children }: { children: React.ReactNode }) {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Data Resource Management</DialogTitle>
-          </DialogHeader>
-          <ResourceEditor></ResourceEditor>
-          <DialogFooter>
-            <Button type='submit'>Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  const onSelected = (resource: Resource) => {
+    console.log('onSelected', resource.id);
+    setSelected(resource.id ?? null);
+  };
+
+  const handleEdit = (resource: Resource) => {
+    setResource(resource);
+    setEditing(true);
+  };
+  const handleAdd = () => {
+    console.log('handleAdd');
+    setResource(null);
+    setEditing(true);
+  };
+
+  const fetchResources = () => {
+    console.log('fetchResources');
+    baseQuery<{ resources: Resource[] }>(`{
+        resources {
+          id
+          name
+          type
+          data
+        }
+      }`).then((data) => setResources(data.resources));
+    setEditing(false);
+  };
+
+  useEffect(() => {
+    fetchResources();
+  }, []);
 
   return (
-    <Card className='w-[250px] h-[400px]'>
-      <CardHeader>
-        <CardTitle>Resource</CardTitle>
-      </CardHeader>
-      <CardContent className='mb-0 pb-0'>
-        <ScrollArea className='h-[280px]'>
-          <div className='text-sm pr-3'>
-            {rs.map((r) => (
-              <div
-                key={r.id}
-                className={cn(
-                  curr === r.id
-                    ? 'border-primary bg-primary text-background'
-                    : 'border-background border-dashed hover:border-dashed hover:border-primary',
-                  'mt-2 mb-2 border pt-1 pb-1 pl-2 pr-2 rounded-lg hover:cursor-pointer flex flex-row'
-                )}
-                onClick={onSelected}
-              >
-                <div className='inline-block flex-1'>{r.name}</div>
-                <div>
-                  {editorDialog({
-                    children: (
-                      <MixerHorizontalIcon
-                        className='w-5 h-5 inline-block hover:text-green-500'
-                        onClick={() => onChange}
-                      />
-                    ),
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </CardContent>
-      <CardFooter className='pt-2'>
-        {editorDialog({
-          children: (
-            <Button
-              variant='outline'
-              className='w-full justify-center text-slate-400 border-slate-400 hover:text-slate-600 hover:border-slate-600 hover:bg-inherit border-2 border-dashed'
+    <>
+      <Card className='w-[250px] h-[400px]'>
+        <CardHeader>
+          <CardTitle>Resource</CardTitle>
+        </CardHeader>
+        <CardContent className='mb-0 pb-0'>
+          <ScrollArea className='h-[280px]'>
+            <div
+              className={cn(
+                'text-sm max-w-[200px]',
+                resources.length > 6 ? 'pr-3' : ''
+              )}
             >
-              Add resource
-            </Button>
-          ),
-        })}
-      </CardFooter>
-    </Card>
+              {resources.map((resource) => (
+                <div
+                  key={resource.id}
+                  className={cn(
+                    selected === resource.id
+                      ? 'border-primary bg-primary text-background'
+                      : 'border-background border-dashed hover:border-dashed hover:border-primary',
+                    'mt-2 mb-2 border pt-1 pb-1 pl-2 pr-2 rounded-lg hover:cursor-pointer flex flex-row'
+                  )}
+                  onClick={() => onSelected(resource)}
+                >
+                  <div className='inline-block flex-1 truncate '>
+                    {resource.name}
+                  </div>
+                  <MixerHorizontalIcon
+                    className='w-5 h-5 inline-block hover:text-green-500 self-center '
+                    onClick={(e) => handleEdit(resource)}
+                  />
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+        <CardFooter className='pt-2'>
+          <Button
+            variant='outline'
+            className='w-full justify-center text-slate-400 border-slate-400 hover:text-slate-600 hover:border-slate-600 hover:bg-inherit border-2 border-dashed'
+            onClick={handleAdd}
+          >
+            Add resource
+            {editing ? '1' : '2'}
+          </Button>
+        </CardFooter>
+      </Card>
+      {editing ? (
+        <ResourceEditor
+          resource={resource}
+          onRefresh={fetchResources}
+        ></ResourceEditor>
+      ) : null}
+    </>
   );
 }

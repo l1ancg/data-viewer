@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/l1ancg/data-viewer/cmd/wire"
-	"github.com/l1ancg/data-viewer/pkg/log"
+	"github.com/l1ancg/data-viewer/backend/cmd/wire"
+	"github.com/l1ancg/data-viewer/backend/pkg/log"
 	_ "github.com/mattn/go-sqlite3"
 )
 
