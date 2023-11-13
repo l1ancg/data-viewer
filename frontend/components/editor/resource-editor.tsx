@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { MouseEvent, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Resource } from '@/types';
 import { baseMutate } from '@/lib/graphql';
@@ -45,7 +44,12 @@ export default function ResourceEditor({
     });
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  // const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
+  //   event.preventDefault();
+  //   console.log('delete');
+  // };
+
+  const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if (!data.name || !data.type || !data.data) {
       alert('所有字段都是必填的！');
@@ -80,7 +84,7 @@ export default function ResourceEditor({
           <DialogHeader>
             <DialogTitle>Data Resource Management</DialogTitle>
           </DialogHeader>
-          <form className='grid gap-4 py-4' onSubmit={handleSubmit}>
+          <form className='grid gap-4 py-4'>
             <div className='grid grid-cols-5 items-center gap-4'>
               <Label htmlFor='name' className='text-right'>
                 Name
@@ -121,7 +125,14 @@ export default function ResourceEditor({
                 onChange={(e) => handleChange('data', e.target.value)}
               />
             </div>
-            <Button type='submit'>Save</Button>
+            <div className='gap-4 grid-cols-5 flex justify-end'>
+              {/* <Button variant='destructive' onClick={(e) => handleDelete(e)}>
+                Delete
+              </Button> */}
+              <Button type='submit' onClick={(e) => handleSubmit(e)}>
+                Save
+              </Button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>

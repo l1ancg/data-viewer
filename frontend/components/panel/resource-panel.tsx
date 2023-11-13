@@ -1,12 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 
 import { cn } from '@/lib/utils';
 import ResourceEditor from '@/components/editor/resource-editor';
@@ -24,10 +17,10 @@ import { useEffect, useState } from 'react';
 import { baseQuery } from '@/lib/graphql';
 
 export default function ResourcePanel() {
-  const [editing, setEditing] = useState(false);
-  const [resources, setResources] = useState([] as Resource[]);
-  const [resource, setResource] = useState(null as Resource | null);
-  const [selected, setSelected] = useState(null as number | null);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [resource, setResource] = useState<Resource | null>(null);
+  const [openEditor, setOpenEditor] = useState(false);
+  const [selected, setSelected] = useState<number | null>(null);
 
   const onSelected = (resource: Resource) => {
     console.log('onSelected', resource.id);
@@ -36,12 +29,12 @@ export default function ResourcePanel() {
 
   const handleEdit = (resource: Resource) => {
     setResource(resource);
-    setEditing(true);
+    setOpenEditor(true);
   };
   const handleAdd = () => {
     console.log('handleAdd');
     setResource(null);
-    setEditing(true);
+    setOpenEditor(true);
   };
 
   const fetchResources = () => {
@@ -54,7 +47,7 @@ export default function ResourcePanel() {
           data
         }
       }`).then((data) => setResources(data.resources));
-    setEditing(false);
+    setOpenEditor(false);
   };
 
   useEffect(() => {
@@ -105,11 +98,10 @@ export default function ResourcePanel() {
             onClick={handleAdd}
           >
             Add resource
-            {editing ? '1' : '2'}
           </Button>
         </CardFooter>
       </Card>
-      {editing ? (
+      {openEditor ? (
         <ResourceEditor
           resource={resource}
           onRefresh={fetchResources}

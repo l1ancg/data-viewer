@@ -25,7 +25,6 @@ func CreateArguments(s interface{}, tags ...string) graphql.FieldConfigArgument 
 		name = strings.ToLower(name[0:1]) + name[1:]
 		fieldNames = append(fieldNames, name)
 	}
-	fmt.Println(fieldNames)
 	return graphql.BindArg(s, fieldNames...)
 }
 

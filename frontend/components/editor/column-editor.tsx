@@ -1,96 +1,88 @@
-import * as React from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { DataTypeValues } from '@/types';
+import { Column, DataTypeValues } from '@/types';
 
-import { Toggle } from '@/components/ui/toggle';
-export interface IColumnEditorProps {}
+import { MyEditor, MyField } from './editor';
+import { useState } from 'react';
+
+export interface IColumnEditorProps {
+  data: Column | null;
+  resourceId: number;
+  onRefresh: () => void;
+}
+// todo 提出去 && 删除此文件放到panel里面
+const fields: Array<MyField> = [
+  {
+    name: 'name',
+    type: 'input',
+  },
+  {
+    name: 'dataType',
+    type: 'select',
+    options: [
+      { value: 'string', label: 'string' },
+      { value: 'number', label: 'number' },
+    ],
+  },
+  {
+    name: 'orderBy',
+    type: 'select',
+    options: [
+      { value: 'asc', label: 'asc' },
+      { value: 'desc', label: 'desc' },
+    ],
+  },
+  {
+    name: 'display',
+    type: 'switch',
+  },
+  {
+    name: 'condition',
+    type: 'switch',
+  },
+];
+
+const mutate = `
+mutation Save($id: Int, $viewId: Int!, $dictId: Int!, $name: String!, $dataType: String!, $orderBy: String!, $display: Boolean!, $condition: Boolean!) {
+  view(
+    id: $id
+    viewId: $viewId
+    dictId: $dictId
+    name: $name
+    dataType: $dataType
+    orderBy: $orderBy
+    display: $display
+    condition: $condition
+  ) {
+    id
+    resourceId
+    resourceType
+    displayType
+    name
+    desc
+  }
+}`;
 
 export default function ColumnEditor(props: IColumnEditorProps) {
+  const { data, resourceId, onRefresh } = props;
+  const [column, setColumn] = useState<Column | null>(data);
+  if (!column) {
+    setColumn({
+      resourceId: resourceId,
+      name: '',
+      dataType: '',
+      orderBy: '',
+      display: false,
+      condition: false,
+    });
+  }
+
   return (
     <>
-      <div className='grid gap-4 py-4'>
-        <div className='grid grid-cols-4 items-center gap-4'>
-          <Label htmlFor='name' className='text-right'>
-            Name
-          </Label>
-          <Input id='name' className='col-span-3' />
-        </div>
-        <div className='grid grid-cols-4 items-center gap-4'>
-          <Label htmlFor='name' className='text-right'>
-            Label
-          </Label>
-          <Input id='name1' className='col-span-3' />
-        </div>
-        <div className='grid grid-cols-4 items-center gap-4'>
-          <Label htmlFor='name' className='text-right'>
-            Type
-          </Label>
-          <Select>
-            <SelectTrigger className='col-span-3'>
-              <SelectValue placeholder='Select a data type' />
-            </SelectTrigger>
-            <SelectContent>
-              {DataTypeValues.map((dt) => (
-                <SelectItem
-                  key={dt.value}
-                  value={dt.value}
-                  className='cursor-pointer'
-                >
-                  {dt.label}
-                </SelectItem>
-              ))}
-              <SelectSeparator></SelectSeparator>
-              <SelectItem
-                value='add'
-                className='text-slate-400 border-slate-400 border-2 border-dashed cursor-pointer'
-              >
-                Add
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className='grid grid-cols-4 items-center gap-4'>
-          <Label htmlFor='username' className='text-right'>
-            Data
-          </Label>
-          <div className='col-span-3'>
-            <Toggle
-              aria-label='Toggle italic'
-              onPressedChange={(x) => console.log(x)}
-            >
-              <div>Display</div>
-            </Toggle>
-            <Toggle
-              aria-label='Toggle italic'
-              onPressedChange={(x) => console.log(x)}
-            >
-              <div>Asc</div>
-            </Toggle>
-            <Toggle
-              aria-label='Toggle italic'
-              onPressedChange={(x) => console.log(x)}
-            >
-              <div>Desc</div>
-            </Toggle>
-            <Toggle
-              aria-label='Toggle italic'
-              onPressedChange={(x) => console.log(x)}
-            >
-              <div>Condition</div>
-            </Toggle>
-          </div>
-        </div>
-      </div>
+      <MyEditor
+        row={column}
+        mutate={mutate}
+        fields={fields}
+        onRefresh={onRefresh}
+      />
     </>
   );
 }

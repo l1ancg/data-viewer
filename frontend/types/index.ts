@@ -16,12 +16,13 @@ export declare type Resource = {
 
 export declare type Column = {
   id?: number;
+  resourceId: number;
+  dictId?: number;
   name: string;
-  label: string;
   dataType: string;
-  display: boolean;
-  orderBy: boolean;
-  condition: boolean;
+  orderBy?: string;
+  display?: boolean;
+  condition?: boolean;
 };
 
 export declare type ResourceType = {
