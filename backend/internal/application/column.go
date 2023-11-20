@@ -8,14 +8,15 @@ import (
 )
 
 type Column struct {
-	Id        int    `json:"id"  gorm:"primarykey"`
-	ViewId    int    `json:"viewId"`
-	DictId    int    `json:"dictId"`
-	Name      string `json:"name"`
-	DataType  string `json:"dataType"`
-	OrderBy   string `json:"orderBy"`
-	Display   bool   `json:"display"`
-	Condition bool   `json:"condition"`
+	Id         int    `json:"id"  gorm:"primarykey"`
+	ResourceId int    `json:"resourceId"`
+	DictId     int    `json:"dictId"`
+	Name       string `json:"name"`
+	DataType   string `json:"dataType"`
+	OrderBy    string `json:"orderBy"`
+	Display    bool   `json:"display"`
+	Condition  bool   `json:"condition"`
+	Desc       string `json:"desc"`
 }
 
 func (Column) TableName() string {
@@ -40,14 +41,20 @@ func NewColumnService(db *repository.DB) *ColumnService {
 			},
 			"columns": {
 				Type:    graphql.NewList(to),
-				Resolve: utils.CreateListResolve(t, db.Select),
+				Args:    utils.CreateArguments(t, "resourceId"),
+				Resolve: utils.CreateParamListResolve(t, db.Select, "resourceId"),
 			},
 		},
 		MutationAction: graphql.Fields{
-			"column": {
+			"createColumn": {
 				Type:    to,
-				Args:    utils.CreateArguments(t, "id", "name", "label", "dataType", "orderBy", "display", "condition"),
+				Args:    utils.CreateArguments(t, "id", "resourceId", "dictId", "name", "dataType", "orderBy", "display", "condition", "desc"),
 				Resolve: utils.CreateSaveResolve(t, db.Save),
+			},
+			"deleteColumn": {
+				Type:    to,
+				Args:    utils.CreateArguments(t, "id"),
+				Resolve: utils.CreateDeleteResolve(t, db.Delete),
 			},
 		},
 		Type: t,

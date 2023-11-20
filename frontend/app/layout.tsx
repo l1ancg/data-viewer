@@ -3,8 +3,7 @@ import './globals.css';
 import Topbar from '@/components/topbar';
 import Sidebar from '@/components/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Separator } from '@/components/ui/separator';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function RootLayout({
   children,
@@ -14,23 +13,17 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className='h-screen w-screen min-h-page min-w-page font-mono'>
-            <Topbar />
+        <div className='h-screen w-screen min-h-page min-w-page font-mono'>
+          <Topbar />
 
-            <div className='pt-12 h-full w-full flex flex-row'>
-              <Sidebar className='w-56 h-full' />
-              <div className='col-span-3 h-full w-full'>
-                <ScrollArea className='h-full px-4 py-6'>{children}</ScrollArea>
-              </div>
+          <div className='pt-12 h-full w-full flex flex-row'>
+            <Sidebar className='w-56 h-full' />
+            <div className='col-span-3 h-full w-full'>
+              <ScrollArea className='h-full px-4 py-6'>{children}</ScrollArea>
             </div>
           </div>
-        </ThemeProvider>
+        </div>
+        <Toaster />
       </body>
     </html>
   );

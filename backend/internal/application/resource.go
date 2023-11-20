@@ -8,7 +8,7 @@ import (
 )
 
 type Resource struct {
-	Id   uint   `json:"id" gorm:"primarykey"`
+	Id   int    `json:"id" gorm:"primarykey"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Data string `json:"data"`

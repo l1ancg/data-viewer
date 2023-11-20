@@ -15,7 +15,6 @@ type Config struct {
 
 type server struct {
 	Port string `ini:"port"`
-	Mode string `ini:"mode"`
 }
 
 type sqlite3 struct {
@@ -23,7 +22,11 @@ type sqlite3 struct {
 }
 
 func NewConfig() *Config {
-	cfg, err := ini.Load("data-viewer.ini")
+	return loadConfigFile("data-viewer.ini")
+}
+
+func loadConfigFile(name string) *Config {
+	cfg, err := ini.Load(name)
 	if err != nil {
 		fmt.Printf("Fail to read config file: %v", err)
 		os.Exit(1)

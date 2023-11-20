@@ -23,14 +23,6 @@ type AbstractHandler struct {
 	// auth...
 }
 
-//func (a *Action) Names() []string {
-//	var r []string
-//	for k := range *a {
-//		r = append(r, k)
-//	}
-//	return r
-//}
-
 type Connect interface {
 	Init(data string) (*component.MySQLClient, error)
 	Destroy(ql string)

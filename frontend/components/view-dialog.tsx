@@ -4,26 +4,39 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import ResourcePanel from '@/components/panel/resource-panel';
 import ColumnPanel from '@/components/panel/column-panel';
+import { useState, ReactNode } from 'react';
 
-export function ViewDialog({ children }: { children: React.ReactNode }) {
+export function ViewDialog({ children }: { children: ReactNode }) {
+  const [selectedResourceId, setSelectedResourceId] = useState<number | null>(
+    null
+  );
+  const selectedResourceHandle = (id: number | null) => {
+    setSelectedResourceId(id);
+  };
+
+  const openChangeHandle = (open: boolean) => {
+    selectedResourceHandle(null);
+  };
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={openChangeHandle}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className='max-w-max'>
         <DialogHeader>
-          <DialogTitle>Add view</DialogTitle>
+          <DialogTitle>View Editor</DialogTitle>
         </DialogHeader>
         <div className='gap-3 flex flex-row'>
           <div className=''>
-            <ResourcePanel></ResourcePanel>
+            <ResourcePanel onSelected={selectedResourceHandle}></ResourcePanel>
           </div>
           <div className=''>
-            <ColumnPanel></ColumnPanel>
+            <ColumnPanel resourceId={selectedResourceId}></ColumnPanel>
           </div>
         </div>
         <DialogFooter>

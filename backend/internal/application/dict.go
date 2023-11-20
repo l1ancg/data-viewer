@@ -8,12 +8,12 @@ import (
 )
 
 type Dict struct {
-	ID   int    `json:"id"  gorm:"primarykey"`
+	Id   int    `json:"id"  gorm:"primarykey"`
 	Name string `json:"name"`
 }
 
 type DictDetail struct {
-	ID     int    `json:"id"  gorm:"primarykey"`
+	Id     int    `json:"id"  gorm:"primarykey"`
 	DictId int    `json:"dictId"`
 	Key    string `json:"key"`
 	Value  string `json:"value"`
