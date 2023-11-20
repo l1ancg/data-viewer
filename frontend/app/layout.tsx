@@ -3,7 +3,7 @@ import './globals.css';
 import Topbar from '@/components/topbar';
 import Sidebar from '@/components/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function RootLayout({
   children,
@@ -23,6 +23,7 @@ export default function RootLayout({
             </div>
           </div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

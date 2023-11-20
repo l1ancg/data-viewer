@@ -23,6 +23,7 @@ export declare type Column = {
   orderBy?: string;
   display?: boolean;
   condition?: boolean;
+  desc?: string;
 };
 
 export declare type ResourceType = {

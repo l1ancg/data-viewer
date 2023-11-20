@@ -19,29 +19,61 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MinusCircledIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import { Column } from '@/types';
-import ColumnEditor from '@/components/editor/column-editor';
 import { MouseEvent, useEffect, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { MyEditor } from '@/components/editor/editor';
+import columnMetadata from '@/components/metadata/column';
+import { baseQuery } from '@/lib/graphql';
 
-export default function ColumnPanel() {
+export interface ColumnPanelProps {
+  resourceId: number | null;
+}
+
+export default function ColumnPanel({ resourceId }: ColumnPanelProps) {
   const [columns, setColumns] = useState<Column[]>([]);
   const [column, setColumn] = useState<Column | null>(null);
   const [openEditor, setOpenEditor] = useState<boolean>(false);
+  const { toast } = useToast();
 
-  const handleDelete = (
-    event: MouseEvent<HTMLButtonElement>,
-    column: Column
-  ) => {
+  const deleteHandle = (event: MouseEvent<SVGElement>, column: Column) => {
     event.preventDefault();
   };
-  const handleEdit = (event: MouseEvent<HTMLButtonElement>, column: Column) => {
+  const editHandle = (event: MouseEvent<SVGElement>, column: Column) => {
     event.preventDefault();
     setColumn(column);
     setOpenEditor(true);
   };
 
-  const fetchColumns = () => {};
+  const addNewHandle = () => {
+    if (!resourceId) {
+      toast({
+        variant: 'destructive',
+        title: 'Please select a resource first',
+      });
+      return;
+    }
+    setColumn(columnMetadata.NewData(resourceId));
+    setOpenEditor(true);
+  };
+  const closeEditorHandle = () => {
+    setOpenEditor(false);
+    setColumn(null);
+    fetchColumns();
+  };
 
-  useEffect(() => {});
+  const fetchColumns = () => {
+    if (resourceId) {
+      baseQuery<{ columns: Column[] }>(columnMetadata.Query, { resourceId })
+        .then((data) => setColumns(data.columns))
+        .catch((e) => toast({ variant: 'destructive', title: e.message }));
+    } else {
+      setColumns([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchColumns();
+  }, [resourceId]);
 
   return (
     <>
@@ -71,19 +103,19 @@ export default function ColumnPanel() {
                       <TableCell>
                         <div className=''>
                           <Badge
-                            variant={column.display ? 'outline' : 'default'}
+                            variant={column.display ? 'default' : 'outline'}
                             className='mr-2'
                           >
                             Display
                           </Badge>
                           <Badge
-                            variant={column.orderBy ? 'outline' : 'default'}
+                            variant={column.orderBy ? 'default' : 'outline'}
                             className='mr-2'
                           >
                             Order
                           </Badge>
                           <Badge
-                            variant={column.condition ? 'outline' : 'default'}
+                            variant={column.condition ? 'default' : 'outline'}
                             className='mr-2'
                           >
                             Condition
@@ -92,18 +124,14 @@ export default function ColumnPanel() {
                       </TableCell>
                       <TableCell>
                         <div className='flex flex-row'>
-                          <Button
-                            asChild
-                            onClick={(e) => handleDelete(e, column)}
-                          >
-                            <Pencil1Icon className='h-4 w-4 mr-2 hover:text-green-500 hover:cursor-pointer' />
-                          </Button>
-                          <Button
-                            asChild
-                            onClick={(e) => handleEdit(e, column)}
-                          >
-                            <MinusCircledIcon className='h-4 w-4 hover:text-red-500 hover:cursor-pointer' />
-                          </Button>
+                          <Pencil1Icon
+                            className='h-4 w-4 mr-2 hover:text-green-500 hover:cursor-pointer'
+                            onClick={(e) => editHandle(e, column)}
+                          />
+                          <MinusCircledIcon
+                            className='h-4 w-4 hover:text-red-500 hover:cursor-pointer'
+                            onClick={(e) => deleteHandle(e, column)}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>
@@ -117,14 +145,20 @@ export default function ColumnPanel() {
           <Button
             variant='outline'
             className='w-full justify-center text-slate-400 border-slate-400 hover:text-slate-600 hover:border-slate-600 hover:bg-inherit border-2 border-dashed'
-            onClick={() => setOpenEditor(true)}
+            onClick={addNewHandle}
           >
             Add column
           </Button>
         </CardFooter>
       </Card>
       {openEditor && (
-        <ColumnEditor data={column} resourceId={0} onRefresh={fetchColumns} />
+        <MyEditor
+          row={column}
+          mutate={columnMetadata.Save}
+          fields={columnMetadata.Fields}
+          onRefresh={closeEditorHandle}
+          onValidate={columnMetadata.OnValidate}
+        />
       )}
     </>
   );

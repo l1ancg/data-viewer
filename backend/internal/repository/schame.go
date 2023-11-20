@@ -25,13 +25,14 @@ CREATE TABLE IF NOT EXISTS "resource" (
 
 CREATE TABLE IF NOT EXISTS "column" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "view_id" TEXT,
-    "dict_id" TEXT,
+    "resource_id" INTEGER,
+    "dict_id" INTEGER,
     "name" TEXT,
-    "dataType" TEXT,
-    "orderBy" TEXT,
+    "data_type" TEXT,
+    "order_by" TEXT,
     "display" INTEGER,
-    "condition" INTEGER
+    "condition" INTEGER,
+    "desc" TEXT
 );
 
 

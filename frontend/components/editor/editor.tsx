@@ -6,7 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -44,17 +43,9 @@ export interface MyEditorProps<T> {
   desc?: string;
 }
 
-export function MyEditor({
-  row,
-  mutate,
-  fields,
-  onRefresh,
-  onValidate,
-  title,
-  desc,
-}: MyEditorProps<any>) {
+export function MyEditor(props: MyEditorProps<any>) {
   const { toast } = useToast();
-  const [data, setData] = useState(row);
+  const [data, setData] = useState(props.row);
   const handleChange = (name: string, value: string | boolean) => {
     setData({
       ...data,
@@ -63,30 +54,32 @@ export function MyEditor({
   };
 
   const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
-    console.log(111, data);
     event.preventDefault();
     try {
-      onValidate && onValidate(data);
+      props.onValidate && props.onValidate(data);
     } catch (e: any) {
-      toast({ title: e.message });
+      toast({ variant: 'destructive', title: e.message });
       return;
     }
 
-    baseMutate(mutate, data)
-      .then(() => onRefresh && onRefresh())
-      .catch((e) => console.log(e));
+    baseMutate(props.mutate, data)
+      .then(() => props.onRefresh && props.onRefresh())
+      .catch((e) => toast({ variant: 'destructive', title: e.message }));
   };
 
   return (
     <>
-      <Dialog defaultOpen onOpenChange={() => onRefresh && onRefresh()}>
+      <Dialog
+        defaultOpen
+        onOpenChange={(open) => !open && props.onRefresh && props.onRefresh()}
+      >
         <DialogContent>
           <DialogHeader>
-            {title && <DialogTitle>{title}</DialogTitle>}
-            {desc && <DialogDescription>{desc}</DialogDescription>}
+            {props.title && <DialogTitle>{props.title}</DialogTitle>}
+            {props.desc && <DialogDescription>{props.desc}</DialogDescription>}
           </DialogHeader>
           <form className='grid gap-4 py-4'>
-            {fields.map(
+            {props.fields.map(
               (field) =>
                 (field.type === 'input' && (
                   <div

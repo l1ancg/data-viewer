@@ -38,12 +38,25 @@ func CreateSaveResolve(s interface{}, saveFunc func(p interface{})) func(params 
 	}
 }
 
+func CreateDeleteResolve(s interface{}, deleteFunc func(s interface{}, id int)) func(params graphql.ResolveParams) (interface{}, error) {
+	t := typeOf(s)
+	return func(params graphql.ResolveParams) (interface{}, error) {
+		r := reflect.New(t).Interface()
+		id, isOK := params.Args["id"].(int)
+		if isOK {
+			deleteFunc(r, id)
+			return r, nil
+		}
+		return nil, errors.New("请指定ID参数")
+	}
+}
+
 func CreateGetResolve(s interface{}, getFunc func(dest interface{}, id int)) func(params graphql.ResolveParams) (interface{}, error) {
-	tp := typeOf(s)
+	t := typeOf(s)
 	return func(params graphql.ResolveParams) (interface{}, error) {
 		id, isOK := params.Args["id"].(int)
 		if isOK {
-			dest := reflect.New(tp).Interface()
+			dest := reflect.New(t).Interface()
 			getFunc(dest, id)
 			return dest, nil
 		}
@@ -51,12 +64,25 @@ func CreateGetResolve(s interface{}, getFunc func(dest interface{}, id int)) fun
 	}
 }
 
-func CreateListResolve(s interface{}, listFunc func(interface{})) func(p graphql.ResolveParams) (interface{}, error) {
-	tp := typeOf(s)
+func CreateListResolve(s interface{}, listFunc func(interface{}, ...interface{})) func(p graphql.ResolveParams) (interface{}, error) {
+	t := typeOf(s)
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		sliceType := reflect.SliceOf(tp)
+		sliceType := reflect.SliceOf(t)
 		slice := reflect.New(sliceType).Elem()
 		listFunc(slice.Addr().Interface())
+		return slice.Interface(), nil
+	}
+}
+
+func CreateParamListResolve(s interface{}, listFunc func(interface{}, ...interface{}), args ...string) func(p graphql.ResolveParams) (interface{}, error) {
+	t := typeOf(s)
+	m := &mapstructure.Metadata{Keys: args}
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		r := reflect.New(t).Interface()
+		mapstructure.DecodeMetadata(p.Args, r, m)
+		sliceType := reflect.SliceOf(t)
+		slice := reflect.New(sliceType).Elem()
+		listFunc(slice.Addr().Interface(), r)
 		return slice.Interface(), nil
 	}
 }

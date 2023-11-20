@@ -29,12 +29,18 @@ func (db *DB) Save(value interface{}) {
 	log.Logger.Infof("save data: %+v", value)
 	db.db.Save(value)
 }
-func (db *DB) Select(dest interface{}) {
-	db.db.Order("id").Find(dest)
+
+func (db *DB) Select(dest interface{}, conds ...interface{}) {
+	db.db.Order("id").Find(dest, conds...)
 	log.Logger.Infof("select result: %v", dest)
 }
 
 func (db *DB) First(query interface{}, id int) {
 	db.db.First(query, id)
 	log.Logger.Infof("first result: %+v", query)
+}
+
+func (db *DB) Delete(query interface{}, id int) {
+	db.db.Delete(query, id)
+	log.Logger.Infof("delete: %+v", id)
 }

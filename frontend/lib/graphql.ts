@@ -6,15 +6,16 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const query = async <T>(ql: string): Promise<T> => {
+const query = async <T>(ql: string, variables?: any): Promise<T> => {
   const { data } = await client.query({
     query: gql(ql),
+    variables,
     fetchPolicy: 'network-only',
   });
   return data;
 };
 
-const mutate = async <T>(ql: string, variables: any): Promise<T> => {
+const mutate = async <T>(ql: string, variables?: any): Promise<T> => {
   const { data } = await client.mutate({ mutation: gql(ql), variables });
   return data;
 };

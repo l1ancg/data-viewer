@@ -33,7 +33,6 @@ export default function Sidebar({ className }: SidebarProps) {
   };
 
   useEffect(() => {
-    console.log(111);
     fetchViews().then((data) => {
       setViews([dashboard, ...data.views]);
     });
