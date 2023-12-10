@@ -4,12 +4,17 @@ import Topbar from '@/components/topbar';
 import Sidebar from '@/components/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Toaster } from '@/components/ui/toaster';
+// import test from '@/lib/sql';
+// import { useEffect } from 'react';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // useEffect(() => {
+  //   test();
+  // });
   return (
     <html lang='en'>
       <body>

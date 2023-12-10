@@ -14,15 +14,17 @@ import { Resource } from '@/types';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 import { baseQuery } from '@/lib/graphql';
-import { MyEditor } from '@/components/editor/editor';
+import { FormEditor } from '@/components/editor/form-editor';
 import { useToast } from '@/components/ui/use-toast';
 import resourceMetadata from '@/components/metadata/resource';
 
 export interface ResourcePanelProps {
-  onSelected: (id: number | null) => void;
+  onSelectedResource: (id: number | null) => void;
 }
 
-export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
+export default function ResourcePanel({
+  onSelectedResource,
+}: ResourcePanelProps) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [resource, setResource] = useState<Resource | null>(null);
   const [openEditor, setOpenEditor] = useState(false);
@@ -31,7 +33,7 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
 
   const clickHandle = (resource: Resource) => {
     setSelected(resource.id ?? null);
-    onSelected(resource.id ?? null);
+    onSelectedResource(resource.id ?? null);
   };
 
   const editHandle = (resource: Resource) => {
@@ -62,12 +64,12 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
 
   return (
     <>
-      <Card className='w-[250px] h-[400px]'>
+      <Card className='w-[250px] h-[500px]'>
         <CardHeader>
           <CardTitle>Resource</CardTitle>
         </CardHeader>
         <CardContent className='mb-0 pb-0'>
-          <ScrollArea className='h-[280px]'>
+          <ScrollArea className='h-[380px]'>
             <div
               className={cn(
                 'text-sm max-w-[200px]',
@@ -108,7 +110,7 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
         </CardFooter>
       </Card>
       {openEditor && (
-        <MyEditor
+        <FormEditor
           row={resource}
           mutate={resourceMetadata.Save}
           fields={resourceMetadata.Fields}

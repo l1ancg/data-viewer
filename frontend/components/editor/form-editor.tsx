@@ -21,29 +21,29 @@ import { baseMutate } from '@/lib/graphql';
 import { useToast } from '@/components/ui/use-toast';
 import { Switch } from '@/components/ui/switch';
 
-export interface MyOption {
+export interface FormFieldOption {
   value: string;
   label: string;
 }
 
 // 声明字段类型，包含一个name和一个type
-export interface MyField {
+export interface FormField {
   name: string;
   type: string;
-  options?: Array<MyOption>;
+  options?: Array<FormFieldOption>;
 }
 
-export interface MyEditorProps<T> {
+export interface FormEditorProps<T> {
   row: T | null;
   mutate: string;
-  fields: MyField[];
+  fields: FormField[];
   onRefresh?: () => void;
   onValidate?: (row: T) => void;
   title?: string;
   desc?: string;
 }
 
-export function MyEditor(props: MyEditorProps<any>) {
+export function FormEditor(props: FormEditorProps<any>) {
   const { toast } = useToast();
   const [data, setData] = useState(props.row);
   const handleChange = (name: string, value: string | boolean) => {
