@@ -1,9 +1,11 @@
 name: Build and Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -12,18 +14,13 @@ jobs:
         include:
           - os: ubuntu-latest
             type: linux
-            asset_name: data-viewer
-          - os: windows-latest
-            type: windows
-            asset_name: data-viewer.exe
-          - os: macos-latest
-            type: mac
-            asset_name: data-viewer
     runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@master
+      with:
+        ref: ${{ github.event.inputs.tag }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
@@ -36,26 +33,11 @@ jobs:
         go-version: '1.20'
 
     - name: Build
-      run: make build-${{ matrix.type }}
+      run: make build-all
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release binaries
+      uses: AButler/upload-release-assets@v3.0
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ matrix.asset_name }}
-        asset_name: ${{ matrix.asset_name }}-${{ matrix.type}}
-        asset_content_type: application/octet-stream
+        repo-token: ${{ secrets.GH_TOKEN }}
+        release-tag: ${{ github.event.inputs.tag }}
+        files: "./bin/data-viewer*"

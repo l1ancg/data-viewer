@@ -30,7 +30,9 @@ const parse = (inputSql: string, type: string): ParseResult => {
       sql: parser.sqlify(ast),
       whereList: selectAst.where ? parseWhere(selectAst.where) : [],
       columnList:
-        selectAst.columns === '*' ? [] : selectAst.columns.map((c) => c.as),
+        typeof selectAst.columns === 'string' && selectAst.columns === '*'
+          ? []
+          : selectAst.columns.map((c) => c.as),
     };
   } catch (e: any) {
     console.log(e);
