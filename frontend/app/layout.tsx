@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <div className='h-screen w-screen min-h-page min-w-page font-mono'>
+        <div className='h-screen w-screen min-h-page min-w-page font-mono bg-white'>
           <Topbar />
 
           <div className='pt-12 h-full w-full flex flex-row'>

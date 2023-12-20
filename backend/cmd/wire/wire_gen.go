@@ -9,17 +9,21 @@ package wire
 import (
 	"github.com/l1ancg/data-viewer/backend/config"
 	"github.com/l1ancg/data-viewer/backend/internal/application"
+	"github.com/l1ancg/data-viewer/backend/internal/handler"
 	"github.com/l1ancg/data-viewer/backend/internal/repository"
 	"github.com/l1ancg/data-viewer/backend/internal/server"
+	"github.com/l1ancg/data-viewer/backend/pkg/connect"
 )
 
 // Injectors from gen.go:
 
 func NewServer() *server.Server {
 	configConfig := config.NewConfig()
-	db := repository.DBProvider(configConfig)
-	service := application.ServiceProvider(db)
-	graphQLHandler := server.GraphQLHandlerProvider(service)
-	serverServer := server.HttpServerProvider(configConfig, graphQLHandler)
+	database := repository.DatabaseProvider(configConfig)
+	service := application.ApplicationProvider(database)
+	graphQLHandler := handler.GraphQLHandlerProvider(service)
+	connectDispatcher := connect.ConnectProvider()
+	queryHandler := handler.QueryHandlerProvider(connectDispatcher, database)
+	serverServer := server.HttpServerProvider(configConfig, graphQLHandler, queryHandler)
 	return serverServer
 }

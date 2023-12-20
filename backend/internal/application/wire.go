@@ -17,11 +17,10 @@ func (s *Service) Names() []string {
 	return r
 }
 
-func ServiceProvider(db *repository.DB) *Service {
+func ApplicationProvider(db *repository.Database) *Service {
 	am := &[]pkg.AbstractManager{
 		NewResourceService(db).AbstractManager,
 		NewViewService(db).AbstractManager,
-		NewColumnService(db).AbstractManager,
 		NewDictService(db).AbstractManager,
 		NewDictDetailService(db).AbstractManager,
 	}

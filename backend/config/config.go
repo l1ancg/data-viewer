@@ -26,16 +26,28 @@ func NewConfig() *Config {
 }
 
 func loadConfigFile(name string) *Config {
-	cfg, err := ini.Load(name)
-	if err != nil {
-		fmt.Printf("Fail to read config file: %v", err)
-		os.Exit(1)
+	config := &Config{
+		Server: server{
+			Port: "8080",
+		},
+		Sqlite3: sqlite3{
+			File: "data-viewer.db",
+		},
 	}
-	config := &Config{}
-	err = cfg.MapTo(config)
-	if err != nil {
-		fmt.Printf("Fail to read config file: %v", err)
-		os.Exit(1)
+	if _, err := os.Stat(name); os.IsNotExist(err) {
+		fmt.Printf("use default config")
+	} else {
+		cfg, err := ini.Load(name)
+		if err != nil {
+			fmt.Printf("Fail to read config file: %v", err)
+			os.Exit(1)
+		}
+		err = cfg.MapTo(config)
+
+		if err != nil {
+			fmt.Printf("Fail to read config file: %v", err)
+			os.Exit(1)
+		}
 	}
 	log.Logger.Infoln("config load done")
 	return config

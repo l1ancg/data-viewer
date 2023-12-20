@@ -1,17 +1,16 @@
-export declare type View = {
-  id: number;
-  resourceId: number;
-  resourceType: string;
-  displayType: string;
-  name: string;
-  desc: string;
-};
-
 export declare type Resource = {
   id?: number;
   name: string;
   type: string;
   data: string;
+};
+
+export declare type View = {
+  id?: number;
+  name: string;
+  resourceId: number | null;
+  ql: string;
+  options: string;
 };
 
 export declare type Option = {

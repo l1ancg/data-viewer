@@ -12,7 +12,7 @@ const Fields: Array<FormField> = [
     type: 'select',
     options: [
       { value: 'mysql', label: 'mysql' },
-      { value: 'mongodb', label: 'mongodb' },
+      // { value: 'mongodb', label: 'mongodb' },
     ],
   },
   {

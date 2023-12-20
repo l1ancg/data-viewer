@@ -9,12 +9,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  ComponentInstanceIcon,
-  DividerHorizontalIcon,
-} from '@radix-ui/react-icons';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { ComponentInstanceIcon } from '@radix-ui/react-icons';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export interface OptionPanelProps {
   option: Option;
@@ -66,7 +63,7 @@ export default function OptionPanel(props: OptionPanelProps) {
             {option.columns.length > 0 ? (
               <Accordion type='single' collapsible className='w-full'>
                 {option.columns.map((column, idx) => (
-                  <AccordionItem value='item-2'>
+                  <AccordionItem value='item-2' key={column.name}>
                     <AccordionTrigger>{column.name}</AccordionTrigger>
                     <AccordionContent>
                       <div className='grid grid-cols-4 items-center gap-4'>
@@ -95,9 +92,9 @@ export default function OptionPanel(props: OptionPanelProps) {
             </div>
             {option.parameters.length > 0 ? (
               <Accordion type='single' collapsible className='w-full'>
-                {option.parameters.map((parameter, idx) => (
-                  <AccordionItem value='item-2'>
-                    <AccordionTrigger>{parameter.name}</AccordionTrigger>
+                {option.parameters.map((param, idx) => (
+                  <AccordionItem value='item-2' key={param.name}>
+                    <AccordionTrigger>{param.name}</AccordionTrigger>
                     <AccordionContent>
                       <div className='grid grid-cols-4 items-center gap-4'>
                         <Label htmlFor='name' className='text-right'>
@@ -106,7 +103,7 @@ export default function OptionPanel(props: OptionPanelProps) {
                         <Input
                           id='name'
                           className='col-span-3 focus-visible:ring-0'
-                          value={parameter.label}
+                          value={param.label}
                           onChange={(e) => {
                             parameterLabelChangeHandle(idx, e.target.value);
                           }}

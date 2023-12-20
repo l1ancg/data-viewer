@@ -70,12 +70,7 @@ export default function ResourcePanel({
         </CardHeader>
         <CardContent className='mb-0 pb-0'>
           <ScrollArea className='h-[380px]'>
-            <div
-              className={cn(
-                'text-sm max-w-[200px]',
-                resources.length > 6 ? 'pr-3' : ''
-              )}
-            >
+            <div className={cn('text-sm', resources.length > 6 ? 'pr-3' : '')}>
               {resources.map((resource) => (
                 <div
                   key={resource.id}
@@ -99,7 +94,7 @@ export default function ResourcePanel({
             </div>
           </ScrollArea>
         </CardContent>
-        <CardFooter className='pt-2'>
+        <CardFooter>
           <Button
             variant='outline'
             className='w-full justify-center text-slate-400 border-slate-400 hover:text-slate-600 hover:border-slate-600 hover:bg-inherit border-2 border-dashed'
@@ -109,6 +104,7 @@ export default function ResourcePanel({
           </Button>
         </CardFooter>
       </Card>
+
       {openEditor && (
         <FormEditor
           row={resource}

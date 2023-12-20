@@ -1,21 +1,29 @@
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import parse from '@/lib/sql';
 import { useToast } from '../ui/use-toast';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 export interface SqlEditorProps {
-  onInputedSql: (sql: string) => void;
+  ql: string;
+  onInputedQl: (sql: string) => void;
 }
 
 export default function SqlEditor(props: SqlEditorProps) {
-  const { onInputedSql } = props;
+  const { onInputedQl: onInputedSql, ql } = props;
   const [timeoutState, setTimeoutState] = useState<NodeJS.Timeout | undefined>(
     undefined
   );
+  const [textAreaValue, setTextAreaValue] = useState<string>('');
   const [error, setError] = useState<boolean>(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setTextAreaValue(ql);
+  }, [ql]);
+
   const onChangeHandle = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setTextAreaValue(event.target.value);
     delay(event.target.value);
   };
   const delay = (s: string) => {
@@ -56,6 +64,7 @@ export default function SqlEditor(props: SqlEditorProps) {
               'focus-visible:ring-0',
               error ? 'border-red-500' : ''
             )}
+            value={textAreaValue}
             style={{ resize: 'none' }}
             cols={70}
             rows={20}

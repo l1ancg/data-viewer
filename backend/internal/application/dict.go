@@ -35,7 +35,7 @@ type DictDetailService struct {
 	pkg.AbstractManager
 }
 
-func NewDictService(db *repository.DB) *DictService {
+func NewDictService(db *repository.Database) *DictService {
 	t := Dict{}
 	to := utils.CreateObject("dict", &t)
 
@@ -65,7 +65,7 @@ func NewDictService(db *repository.DB) *DictService {
 	return &dm
 }
 
-func NewDictDetailService(db *repository.DB) *DictDetailService {
+func NewDictDetailService(db *repository.Database) *DictDetailService {
 	t := Dict{}
 	to := utils.CreateObject("dictDetail", &t)
 
