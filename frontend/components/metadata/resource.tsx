@@ -1,8 +1,8 @@
 import { toast } from '@/components/ui/use-toast';
-import { MyField } from '@/components/editor/editor';
+import { FormField } from '@/components/editor/form-editor';
 import { Resource } from '@/types';
 
-const Fields: Array<MyField> = [
+const Fields: Array<FormField> = [
   {
     name: 'name',
     type: 'input',
@@ -12,7 +12,7 @@ const Fields: Array<MyField> = [
     type: 'select',
     options: [
       { value: 'mysql', label: 'mysql' },
-      { value: 'mongodb', label: 'mongodb' },
+      // { value: 'mongodb', label: 'mongodb' },
     ],
   },
   {

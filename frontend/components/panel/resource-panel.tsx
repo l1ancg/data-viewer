@@ -14,15 +14,17 @@ import { Resource } from '@/types';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 import { baseQuery } from '@/lib/graphql';
-import { MyEditor } from '@/components/editor/editor';
+import { FormEditor } from '@/components/editor/form-editor';
 import { useToast } from '@/components/ui/use-toast';
 import resourceMetadata from '@/components/metadata/resource';
 
 export interface ResourcePanelProps {
-  onSelected: (id: number | null) => void;
+  onSelectedResource: (id: number | null) => void;
 }
 
-export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
+export default function ResourcePanel({
+  onSelectedResource,
+}: ResourcePanelProps) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [resource, setResource] = useState<Resource | null>(null);
   const [openEditor, setOpenEditor] = useState(false);
@@ -31,7 +33,7 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
 
   const clickHandle = (resource: Resource) => {
     setSelected(resource.id ?? null);
-    onSelected(resource.id ?? null);
+    onSelectedResource(resource.id ?? null);
   };
 
   const editHandle = (resource: Resource) => {
@@ -62,18 +64,13 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
 
   return (
     <>
-      <Card className='w-[250px] h-[400px]'>
+      <Card className='w-[250px] h-[500px]'>
         <CardHeader>
           <CardTitle>Resource</CardTitle>
         </CardHeader>
         <CardContent className='mb-0 pb-0'>
-          <ScrollArea className='h-[280px]'>
-            <div
-              className={cn(
-                'text-sm max-w-[200px]',
-                resources.length > 6 ? 'pr-3' : ''
-              )}
-            >
+          <ScrollArea className='h-[380px]'>
+            <div className={cn('text-sm', resources.length > 6 ? 'pr-3' : '')}>
               {resources.map((resource) => (
                 <div
                   key={resource.id}
@@ -97,7 +94,7 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
             </div>
           </ScrollArea>
         </CardContent>
-        <CardFooter className='pt-2'>
+        <CardFooter>
           <Button
             variant='outline'
             className='w-full justify-center text-slate-400 border-slate-400 hover:text-slate-600 hover:border-slate-600 hover:bg-inherit border-2 border-dashed'
@@ -107,8 +104,9 @@ export default function ResourcePanel({ onSelected }: ResourcePanelProps) {
           </Button>
         </CardFooter>
       </Card>
+
       {openEditor && (
-        <MyEditor
+        <FormEditor
           row={resource}
           mutate={resourceMetadata.Save}
           fields={resourceMetadata.Fields}

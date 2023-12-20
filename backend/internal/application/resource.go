@@ -22,7 +22,7 @@ type ResourceService struct {
 	pkg.AbstractManager
 }
 
-func NewResourceService(db *repository.DB) *ResourceService {
+func NewResourceService(db *repository.Database) *ResourceService {
 	t := Resource{}
 	to := utils.CreateObject("resource", &t)
 	dm := ResourceService{AbstractManager: pkg.AbstractManager{

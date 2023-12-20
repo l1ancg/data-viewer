@@ -8,12 +8,11 @@ import (
 )
 
 type View struct {
-	Id           int    `json:"id"  gorm:"primarykey"`
-	ResourceId   int    `json:"resourceId"`
-	ResourceType string `json:"resourceType"`
-	DisplayType  string `json:"displayType"`
-	Name         string `json:"name"`
-	Desc         string `json:"desc"`
+	Id         int    `json:"id"  gorm:"primarykey"`
+	Name       string `json:"name"`
+	ResourceId int    `json:"resourceId"`
+	Ql         string `json:"ql"`
+	Options    string `json:"options"`
 }
 
 func (View) TableName() string {
@@ -24,7 +23,7 @@ type ViewService struct {
 	pkg.AbstractManager
 }
 
-func NewViewService(db *repository.DB) *ViewService {
+func NewViewService(db *repository.Database) *ViewService {
 	t := View{}
 	to := utils.CreateObject("view", &t)
 	dm := ViewService{AbstractManager: pkg.AbstractManager{
@@ -44,8 +43,13 @@ func NewViewService(db *repository.DB) *ViewService {
 		MutationAction: graphql.Fields{
 			"view": {
 				Type:    to,
-				Args:    utils.CreateArguments(t, "id", "resourceId", "viewType", "displayType", "name", "desc"),
+				Args:    utils.CreateArguments(t, "id", "name", "resourceId", "ql", "options"),
 				Resolve: utils.CreateSaveResolve(t, db.Save),
+			},
+			"delete": {
+				Type:    to,
+				Args:    utils.CreateArguments(t, "id"),
+				Resolve: utils.CreateDeleteResolve(t, db.Delete),
 			},
 		},
 		Type: t,
